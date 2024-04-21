@@ -300,6 +300,28 @@ router.get("/1/search", async (req, res) => {
 //   }
 // });
 
+router.patch("/1/:id", async (req, res) => {
+  const id = req.params.id;
+  const filter = { _id: new Object(id) };
+  const updatedDoc = {
+    $set: {
+      status: "inHouse",
+    },
+  };
+  await OrderProduct.updateOne(filter, updatedDoc)
+    .then(() => {
+      res.status(200).json({
+        message: "success",
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        message: "error",
+      });
+    });
+});
+
 router.post("/", async (req, res) => {
   const data = req.body;
   const query = { productCode: data?.productCode };
