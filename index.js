@@ -1,16 +1,17 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const cors = require("cors");
+// const cors = require("cors");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 5000;
-require('colors')
-
+require("colors");
+const applyMiddleware = require("./middlewares");
 // middleware
-app.use(cors());
+// app.use(cors());
 app.use(express.json());
 
+applyMiddleware(app);
 
 const dburi = `mongodb+srv://${process.env.SUPERSHOP_USERNAME}:${process.env.SUPERSHOP_PASSWORD}@cluster0.lmwybt8.mongodb.net/?retryWrites=true&w=majority`;
 
@@ -22,13 +23,13 @@ const databaseConnect = async () => {
       // serverSelectionTimeoutMS: 30000,
     });
 
-    app.post("/jwt", (req, res) => {
-      const user = req.body;
-      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-        expiresIn: "72h",
-      });
-      res.send({ token });
-    });
+    // app.post("/jwt", (req, res) => {
+    //   const user = req.body;
+    //   const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+    //     expiresIn: "72h",
+    //   });
+    //   res.send({ token });
+    // });
 
     console.log("Database connection successful".cyan.underline);
   } catch (error) {
@@ -38,16 +39,15 @@ const databaseConnect = async () => {
 };
 databaseConnect();
 
-
 // Routes function
 const sellSchema = require("./routeHandler/sellProductHandler");
-const orderSchema = require("./routeHandler/orderProductHandler");
+const orderHandler = require("./routeHandler/orderProductHandler");
 const userHandler = require("./routeHandler/userHandler");
 const noteHandler = require("./routeHandler/noteBookHandler");
 const categoryHandler = require("./routeHandler/categoryHandler");
-const cartsHandler = require('./routeHandler/cartsHandler');
-const soldHandler = require('./routeHandler/soldHandler');
-
+const cartsHandler = require("./routeHandler/cartsHandler");
+const soldHandler = require("./routeHandler/soldHandler");
+const authHandler = require("./routeHandler/authHandler");
 
 app.get("/", (req, res) => {
   res.send("SuperShop. Unlock your code knowledge");
@@ -55,13 +55,13 @@ app.get("/", (req, res) => {
 
 // application routes
 app.use("/sellProduct", sellSchema);
-app.use("/orderProduct", orderSchema);
+app.use("/orderProduct", orderHandler);
 app.use("/user", userHandler);
 app.use("/noteBooks", noteHandler);
 app.use("/category", categoryHandler);
 app.use("/carts", cartsHandler);
 app.use("/soldItems", soldHandler);
-
+app.use("/auth", authHandler);
 
 app.get("/", (req, res) => {
   res.send("SuperShop. Unlock your code knowledge");

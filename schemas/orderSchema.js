@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
-
-const orderSchema = mongoose.Schema({
+const productsSchema = mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -15,6 +14,12 @@ const orderSchema = mongoose.Schema({
     required: true,
     min: 0,
   },
+  productStatus: {
+    type: String,
+  },
+});
+const orderSchema = mongoose.Schema({
+  products: [productsSchema],
   deliveryDate: {
     type: Date,
     required: true,
@@ -33,9 +38,9 @@ const orderSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  productCode: {
+  invoiceNo: {
     type: String,
-    required: true,
+    required: false,
     unique: true,
   },
   advancedAmount: {
@@ -45,6 +50,7 @@ const orderSchema = mongoose.Schema({
   },
   image: {
     type: String,
+    required: false,
   },
   status: {
     type: String,
