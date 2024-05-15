@@ -16,7 +16,8 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/state", async (req, res) => {
-  const { email, searchValue, role, currentPage, itemsPerPage } = req.query;
+  const { email, searchValue, role, currentPage, itemsPerPage, status } =
+    req.query;
   try {
     let query = {};
     if (role === "employee") {
@@ -34,7 +35,9 @@ router.get("/state", async (req, res) => {
     if (searchValue && searchValue.trim() !== " ") {
       query.$or = [{ productCode: searchValue }];
     }
-
+    // if (status) {
+    //   query.status = status;
+    // }
     const skip = currentPage * itemsPerPage;
     console.log(skip);
 
@@ -42,11 +45,11 @@ router.get("/state", async (req, res) => {
       .skip(skip)
       .limit(itemsPerPage)
       .sort({ deliveryDate: -1 });
-    if (!items || items.length === 0) {
-      return res.status(404).json({
-        message: "No items found for the given email and search term",
-      });
-    }
+    // if (!items || items.length === 0) {
+    //   return res.status(404).json({
+    //     message: "No items found for the given email and search term",
+    //   });
+    // }
     const totalCount = await OrderProductDB.countDocuments();
     res.status(200).json({ items, totalCount });
   } catch (error) {
@@ -139,44 +142,34 @@ router.get("/:id", async (req, res) => {
 
 router.get("/1/search", async (req, res) => {
   const { email, searchValue, currentPage, itemsPerPage, status } = req.query;
+
   try {
-    // console.log("attack search");
-    let query = {};
     if (!email) {
       return res.status(400).json({ message: "Invalid user" });
-    } else {
-      query = {};
     }
 
-    if (searchValue && searchValue.trim() !== " ") {
-      query.$or = [{ productCode: searchValue }];
-    }
+    const query = {
+      ...(searchValue &&
+        searchValue.trim() !== "" && { invoiceNo: searchValue }),
+      ...(status && { status }),
+    };
 
-    if (status) {
-      query.status = status;
-    }
-    // console.log(req.query);
-    const skip = currentPage * itemsPerPage;
+    const skip = parseInt(currentPage) * parseInt(itemsPerPage);
+    const limit = parseInt(itemsPerPage);
 
     const items = await OrderProductDB.find(query)
       .skip(skip)
-      .limit(itemsPerPage)
+      .limit(limit)
       .sort({ deliveryDate: -1 });
-    // console.log("object", items);
-    if (!items || items.length === 0) {
-      return res.status(404).json({
-        message: "No items found for the given email and search term",
-      });
-    }
-    // Total number of blogs
+
     const totalCount = await OrderProductDB.countDocuments(query);
-    console.log(totalCount);
+
     res.status(200).json({ items, totalCount });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: "Error occurred while searching for items",
-    });
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Error occurred while searching for items" });
   }
 });
 
