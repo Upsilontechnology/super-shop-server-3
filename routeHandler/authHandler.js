@@ -6,9 +6,11 @@ require("dotenv").config();
 router.post("/jwt", async (req, res, next) => {
   try {
     const user = req.body;
+    console.log(user);
     const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
       expiresIn: "72h",
     });
+    // console.log(token);
     res
       .cookie("token", token, {
         httpOnly: true,

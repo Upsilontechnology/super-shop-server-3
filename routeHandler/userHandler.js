@@ -4,7 +4,8 @@ const router = express.Router();
 const userSchema = require("../schemas/userSchema");
 const UserInfo = new mongoose.model("User", userSchema);
 const verifyLogin = require("../middlewares/verifyLogin");
-const { verifyToken } = require("../middlewares/verifyToken");
+const verifyToken = require("../middlewares/verifyToken");
+const verifyAdmin = require("../middlewares/verifyAdmin");
 
 router.get("/", async (req, res) => {
   await UserInfo.find()
@@ -191,9 +192,11 @@ router.delete("/:id", async (req, res) => {
     });
 });
 
-router.get("/admin/:email", verifyToken, async (req, res) => {
+router.get("/admin/:email", verifyToken, verifyAdmin, async (req, res) => {
   const email = req.params.email;
   console.log(email);
+  console.log("api attack");
+  // console.log(req.decoded.email);
   if (email !== req.decoded.email) {
     return res.status(403).send({ message: "forbidden access" });
   }
