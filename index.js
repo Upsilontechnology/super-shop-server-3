@@ -17,11 +17,7 @@ const dburi = `mongodb+srv://${process.env.SUPERSHOP_USERNAME}:${process.env.SUP
 
 const databaseConnect = async () => {
   try {
-    await mongoose.connect(dburi, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      // serverSelectionTimeoutMS: 30000,
-    });
+    await mongoose.connect(dburi);
 
     // app.post("/jwt", (req, res) => {
     //   const user = req.body;
