@@ -48,6 +48,16 @@ const orderSchema = mongoose.Schema({
     min: 0,
     default: 0,
   },
+  dueAmount: {
+    type: Number,
+    min: 0,
+    default: 0,
+  },
+  totalAmount: {
+    type: Number,
+    min: 0,
+    default: 0,
+  },
   image: {
     type: String,
     required: false,

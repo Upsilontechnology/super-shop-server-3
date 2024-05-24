@@ -279,29 +279,45 @@ router.get("/1/search", async (req, res) => {
 router.patch("/orderId/:orderId/productStatus/:productId", async (req, res) => {
   const orderId = req.params.orderId;
   const productId = req.params.productId;
-  // console.log(orderId, productId);
+  const paidAmount = req.body.paidAmount;
+
   try {
     const existingOrder = await OrderProductDB.findById(orderId);
     if (!existingOrder) {
       return res.status(404).json({ message: "Order not found" });
     }
 
+    // checking due amount
+    const amountOfDue = existingOrder?.dueAmount;
+
+    if (paidAmount > amountOfDue) {
+      return res.status(404).json({ message: "Please check your due amount first" });
+    }
+    if (paidAmount < 0 || paidAmount === 0) {
+      return res.status(404).json({ message: "Amount Cannot be a neutral value" });
+    }
+
+    const dueAmount = amountOfDue - paidAmount;
     const updatedOrder = await OrderProductDB.findByIdAndUpdate(
       orderId,
       {
-        $set: { "products.$[elem].productStatus": "complete" },
+        $set: {
+          "products.$[elem].productStatus": "complete",
+          dueAmount: dueAmount
+        },
       },
       {
         new: true,
         arrayFilters: [{ "elem._id": new mongoose.Types.ObjectId(productId) }],
       }
     );
-
+    console.log(updatedOrder)
     if (!updatedOrder) {
       return res.status(404).json({ message: "Product not found in order" });
     }
 
     res.status(200).json({ message: "success" });
+
   } catch (error) {
     console.error(error);
     let errorMessage = "Internal server error";
