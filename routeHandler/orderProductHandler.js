@@ -280,7 +280,7 @@ router.patch("/orderId/:orderId/productStatus/:productId", async (req, res) => {
   const orderId = req.params.orderId;
   const productId = req.params.productId;
   const paidAmount = req.body.paidAmount;
-
+  console.log(productId)
   try {
     const existingOrder = await OrderProductDB.findById(orderId);
     if (!existingOrder) {
