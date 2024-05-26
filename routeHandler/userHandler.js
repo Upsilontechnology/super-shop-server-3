@@ -194,9 +194,7 @@ router.delete("/:id", async (req, res) => {
 
 router.get("/admin/:email", verifyToken, verifyAdmin, async (req, res) => {
   const email = req.params.email;
-  console.log(email);
-  console.log("api attack");
-  // console.log(req.decoded.email);
+
   if (email !== req.decoded.email) {
     return res.status(403).send({ message: "forbidden access" });
   }

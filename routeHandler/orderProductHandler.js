@@ -214,73 +214,11 @@ router.get("/1/search", async (req, res) => {
 //   }
 // });
 
-// router.patch("/productStatus/:productId", async (req, res) => {
-//   const productId = req.params.productId;
-//   console.log(productId);
-
-//   try {
-//     const updatedDoc = await OrderProductDB.findByIdAndUpdate(
-//       productId,
-//       { $set: { "products.$[elem].productStatus": "complete" } },
-//       {
-//         new: true,
-//         arrayFilters: [{ "elem._id": productId }],
-//       }
-//     );
-
-//     if (!updatedDoc) {
-//       return res.status(404).json({ message: "Document not found" });
-//     }
-
-//     res.status(200).json({ message: "success" });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: "Internal server error" });
-//   }
-// });
-
-// router.patch("/orderId/:orderId/productStatus/:productId", async (req, res) => {
-//   const orderId = req.params.orderId;
-//   const productId = req.params.productId;
-//   console.log("attack", orderId, productId);
-//   try {
-//     const existingOrder = await OrderProductDB.findById(orderId);
-//     if (!existingOrder) {
-//       return res.status(404).json({ message: "Order not found" });
-//     }
-
-//     const updatedOrder = await OrderProductDB.findByIdAndUpdate(
-//       orderId,
-//       {
-//         $set: { "products.$[elem].productStatus": "complete" },
-//       },
-//       {
-//         new: true,
-//         arrayFilters: [{ "elem._id": mongoose.Types.ObjectId(productId) }],
-//       }
-//     );
-
-//     if (!updatedOrder) {
-//       return res.status(404).json({ message: "Product not found in order" });
-//     }
-
-//     res.status(200).json({ message: "Product status updated successfully" });
-//   } catch (error) {
-//     console.error(error);
-//     let errorMessage = "Internal server error";
-//     if (error.name === "CastError") {
-//       errorMessage = "Invalid order or product ID";
-//     }
-
-//     res.status(500).json({ message: errorMessage });
-//   }
-// });
-
 router.patch("/orderId/:orderId/productStatus/:productId", async (req, res) => {
   const orderId = req.params.orderId;
   const productId = req.params.productId;
   const paidAmount = req.body.paidAmount;
-  console.log(productId)
+  console.log(productId);
   try {
     const existingOrder = await OrderProductDB.findById(orderId);
     if (!existingOrder) {
@@ -291,10 +229,14 @@ router.patch("/orderId/:orderId/productStatus/:productId", async (req, res) => {
     const amountOfDue = existingOrder?.dueAmount;
 
     if (paidAmount > amountOfDue) {
-      return res.status(404).json({ message: "Please check your due amount first" });
+      return res
+        .status(404)
+        .json({ message: "Please check your due amount first" });
     }
     if (paidAmount < 0 || paidAmount === 0) {
-      return res.status(404).json({ message: "Amount Cannot be a neutral value" });
+      return res
+        .status(404)
+        .json({ message: "Amount Cannot be a neutral value" });
     }
 
     const dueAmount = amountOfDue - paidAmount;
@@ -303,7 +245,7 @@ router.patch("/orderId/:orderId/productStatus/:productId", async (req, res) => {
       {
         $set: {
           "products.$[elem].productStatus": "complete",
-          dueAmount: dueAmount
+          dueAmount: dueAmount,
         },
       },
       {
@@ -311,13 +253,12 @@ router.patch("/orderId/:orderId/productStatus/:productId", async (req, res) => {
         arrayFilters: [{ "elem._id": new mongoose.Types.ObjectId(productId) }],
       }
     );
-    console.log(updatedOrder)
+    // console.log(updatedOrder);
     if (!updatedOrder) {
       return res.status(404).json({ message: "Product not found in order" });
     }
 
     res.status(200).json({ message: "success" });
-
   } catch (error) {
     console.error(error);
     let errorMessage = "Internal server error";
