@@ -15,31 +15,21 @@ applyMiddleware(app);
 
 const dburi = `mongodb+srv://${process.env.SUPERSHOP_USERNAME}:${process.env.SUPERSHOP_PASSWORD}@cluster0.lmwybt8.mongodb.net/?retryWrites=true&w=majority`;
 
-const databaseConnect = async () => {
-  try {
-    await mongoose.connect(dburi);
-    // await mongoose.connect(dburi, {
-    //   // useNewUrlParser: true,
-    //   // useUnifiedTopology: true,
-    //   // serverSelectionTimeoutMS: 30000,
-    // });
+// const databaseConnect = async () => {
+//   try {
+//     await mongoose.connect(dburi);
+//     console.log("Database connection successful".cyan.underline);
+//   } catch (error) {
+//     console.log(error.message);
+//     console.log("Database connection failed");
+//   }
+// };
+// databaseConnect();
 
-    // app.post("/jwt", (req, res) => {
-    //   const user = req.body;
-    //   const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-    //     expiresIn: "72h",
-    //   });
-    //   res.send({ token });
-    // });
-
-    console.log("Database connection successful".cyan.underline);
-  } catch (error) {
-    console.log(error.message);
-    console.log("Database connection failed");
-  }
-};
-databaseConnect();
-
+mongoose
+  .connect(dburi)
+  .then(() => console.log("connected successful".cyan.underline))
+  .catch((err) => console.log(err));
 // Routes function
 const sellSchema = require("./routeHandler/sellProductHandler");
 const orderHandler = require("./routeHandler/orderProductHandler");

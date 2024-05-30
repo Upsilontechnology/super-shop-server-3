@@ -6,11 +6,11 @@ const User = mongoose.model("User", userSchema);
 const verifyAdmin = async (req, res, next) => {
   console.log(req.decoded);
   const email = req.decoded.email;
-  // console.log("verify Admin process", email);
+  console.log("verify Admin process", email);
   try {
     const user = await User.findOne({ email }, { role: 1 });
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "User not found verify admin" });
     }
     req.isAdmin = user.role === "admin";
     next();

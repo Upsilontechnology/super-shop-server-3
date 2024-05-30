@@ -87,6 +87,7 @@ router.get("/:email", async (req, res) => {
 
 router.post("/", async (req, res) => {
   const NewUserInfo = new UserInfo(req.body);
+  console.log(NewUserInfo);
   await NewUserInfo.save()
     .then((data) => {
       res.status(200).json({
@@ -194,7 +195,7 @@ router.delete("/:id", async (req, res) => {
 
 router.get("/admin/:email", verifyToken, verifyAdmin, async (req, res) => {
   const email = req.params.email;
-
+  console.log("admin attack");
   if (email !== req.decoded.email) {
     return res.status(403).send({ message: "forbidden access" });
   }
