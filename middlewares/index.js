@@ -42,6 +42,7 @@ const allowedOrigins = [
   "http://viptailorstock.com",
   "http://localhost:5173",
   "https://vip-tailor.vercel.app",
+  "http://vip-tailor.vercel.app",
   "http://localhost:5174",
 ];
 
